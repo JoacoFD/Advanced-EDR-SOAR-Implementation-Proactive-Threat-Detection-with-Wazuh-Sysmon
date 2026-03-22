@@ -1,0 +1,1 @@
+# Advanced-EDR-SOAR-Implementation-Proactive-Threat-Detection-with-Wazuh-Sysmon
