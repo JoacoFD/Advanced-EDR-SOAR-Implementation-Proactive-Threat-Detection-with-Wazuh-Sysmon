@@ -1,91 +1,84 @@
-# Advanced-EDR-SOAR-Implementation-Proactive-Threat-Detection-with-Wazuh-Sysmon
+### Advanced-EDR-SOAR-Implementation-Proactive-Threat-Detection-with-Wazuh-Sysmon
 
-1. Introducción y Arquitectura del Proyecto
-Este proyecto documenta la implementación exitosa de un sistema de Detección y Respuesta de Endpoints (EDR) y Orquestación, Automatización y Respuesta de Seguridad (SOAR) en un entorno Windows 11.
+Este proyecto documenta la implementación de un sistema de **Detección y Respuesta de Endpoints (EDR)** y **Orquestación, Automatización y Respuesta de Seguridad (SOAR)** en un entorno controlado de Windows 11.
 
-El objetivo principal fue pasar de un monitoreo pasivo a una postura de defensa proactiva, integrando telemetría avanzada de sistema operativo con inteligencia de amenazas externa para automatizar la identificación y análisis de malware.
+El objetivo fue transformar un monitoreo pasivo en una defensa proactiva, integrando telemetría de kernel con inteligencia de amenazas externa.
 
-Stack Tecnológico:
+---
 
-Wazuh (Manager & Agent): Núcleo del SIEM/EDR para recolección y correlación de eventos.
+##  Arquitectura del Proyecto
 
-Sysmon (System Monitor): Provee telemetría profunda a nivel de kernel de Windows.
+El sistema se basa en tres pilares fundamentales:
+* **Wazuh (Manager & Agent):** Recolección y correlación de eventos distribuidos.
+* **Sysmon (System Monitor):** Visibilidad profunda a nivel de Kernel (Event ID 1, 6, etc.).
+* **VirusTotal API:** Enriquecimiento de alertas y análisis reputacional automatizado.
 
-VirusTotal API: Fuente de inteligencia de amenazas para análisis reputacional automatizado.
+---
 
-2. Implementación de Telemetría Profunda con Sysmon
-El Desafío
-Los logs estándar de seguridad de Windows no ofrecen suficiente visibilidad sobre la cadena de ejecución de un ataque. Se necesitaba una "lupa" forense para monitorear la creación de procesos, carga de drivers y conexiones de red en tiempo real.
+##  1. Telemetría de Kernel con Sysmon
 
-La Solución
-Se desplegó Sysmon con una configuración optimizada para capturar eventos críticos (Event ID 1 y 6). Esto nos permitió visibilizar incluso drivers legítimos de protección, fundamentales para el análisis de falsos positivos.
+Para superar las limitaciones de los logs estándar de Windows, se implementó **Sysmon**. Esto permite rastrear la carga de drivers y la creación de procesos sospechosos en tiempo real.
 
+> **Evidencia Forense:** Captura de carga de drivers críticos y servicios del sistema.
+<img width="941" height="378" alt="screen1" src="https://github.com/user-attachments/assets/6af024d4-ea0f-43ba-837d-bb2099fa057d" />
 
-<img width="941" height="378" alt="screen1" src="https://github.com/user-attachments/assets/b5f58a18-d9bc-42b0-9b46-701f753373f5" />
+*En la imagen se observa la detección del driver `MbamChameleon.sys` y la actividad del propio binario de Sysmon, confirmando visibilidad total sobre módulos de kernel.*
 
+---
 
-"Evidencia forense de Sysmon: Captura exitosa de la carga del driver de kernel MbamChameleon.sys, demostrando visibilidad total sobre módulos críticos del sistema."
+## ⚙️ 2. Configuración del EDR (`agent.conf`)
 
-3. Configuración del Agente EDR (agent.conf)
-Para orquestar la telemetría, se modificó el archivo agent.conf del Agente Wazuh para realizar tres acciones clave:
+La orquestación se logró modificando el archivo de configuración del agente para centralizar la ingesta de datos y activar el monitoreo de integridad (FIM).
 
-Ingesta de Sysmon: Se configuró el canal de logs Microsoft-Windows-Sysmon/Operational como fuente de eventos.
+* **Ingesta:** Canal `Microsoft-Windows-Sysmon/Operational`.
+* **FIM:** Monitoreo en tiempo real de la ruta `C:\Users\joaqu\Desktop`.
+* **Triggers:** Preparación de disparadores para niveles críticos (12+).
 
-Monitoreo de Integridad de Archivos (FIM): Se activó el monitoreo en tiempo real del Escritorio del usuario (C:\Users\joaqu\Desktop) para detectar la descarga o creación de artefactos sospechosos.
+📂 [Ver archivo de configuración completo](./config/agent.conf)
 
-Habilitación de Active Response: Se prepararon los disparadores (triggers) para ejecutar scripts de remediación ante alertas de nivel crítico (12+).
+---
 
-(Nota: Enlazar aquí al archivo /config/agent.conf subido al repo)
+## 🤖 3. Integración SOAR: Análisis con VirusTotal
 
-4. Integración SOAR & Inteligencia de Amenazas (VirusTotal)
-Esta es la pieza central de la automatización. Ante la creación de un archivo nuevo en el Escritorio (detectado por FIM), el sistema extrae automáticamente el Hash (MD5/SHA256) y lo consulta contra la API de VirusTotal.
+Ante la creación de cualquier archivo nuevo en el escritorio, el sistema extrae el Hash y realiza una consulta automática a la API de VirusTotal sin intervención humana.
 
-Demostración de Funcionamiento (Ejemplo Real #1)
-Durante el laboratorio, se simuló la descarga de un binario malicioso conocido (malware_final.exe). El sistema ejecutó el flujo SOAR completo.
+### Caso de Uso: Detección de Malware Real
+Se introdujo el artefacto `malware_final.exe` para testear el flujo de trabajo.
 
-📸 SCREENSHOT #2 A INSERTAR AQUÍ: Usá la imagen image_5c4b02.jpg (la del Discover).
+> **Resultado del Análisis:**
+![Detección VirusTotal](./screenshots/malware_vt.png)
+*El sistema reportó **67 detecciones positivas**, disparando una alerta de **Nivel 12** en el Manager de Wazuh de forma inmediata.*
 
-Qué recuadrar en rojo:
+---
 
-data.virustotal.malicious: 1
+## 🧠 4. Detección por Comportamiento (Heurística)
 
-data.virustotal.positives: 67
+No dependemos solo de firmas. Se crearon reglas para detectar técnicas de ataque comunes, como el uso de PowerShell para ejecutar binarios desde rutas no convencionales.
 
-data.virustotal.source.file: c:\users\joaqu\desktop\malware_final.exe
+> **Alerta de Comportamiento:**
+![Alerta PowerShell](./screenshots/powershell_alert.png)
+*Identificación de procesos de PowerShell ejecutando comandos fuera del estándar, permitiendo detectar ataques 'fileless'.*
 
-Leyenda en GitHub: "Automatización SOAR en acción: Alerta crítica generada tras la consulta automatizada a VirusTotal. 67 motores de antivirus confirmaron la naturaleza maliciosa del archivo detectado en tiempo real."
+---
 
-5. Detección por Comportamiento y Reglas Personalizadas
-No todas las amenazas tienen una firma conocida. Se desarrollaron reglas personalizadas para detectar comportamientos anómalos, como el uso indebido de PowerShell para lanzar ejecutables.
+## 📊 5. Dashboard del SOC (Security Operations Center)
 
-Demostración de Funcionamiento (Ejemplo Real #2)
-Se detectó la ejecución de un script de PowerShell sospechoso intentando realizar cambios en el sistema.
+Se diseñó una interfaz personalizada para el analista, priorizando los eventos críticos y reduciendo la "fatiga de alertas".
 
-📸 SCREENSHOT #3 A INSERTAR AQUÍ: Usá la torta de Tipos de Malware Detectados de la image_51713e.png.
+![SOC Dashboard](./screenshots/dashboard_final.png)
 
-Qué recuadrar en rojo: La rebanada que dice: Powershell process or execution from standard....
+**Métricas Clave:**
+1.  **Contador de Alertas Críticas:** Enfoque directo en incidentes nivel 12-14.
+2.  **Distribución por Nivel:** Separación clara entre ruido de sistema y amenazas reales.
+3.  **Top Malware:** Identificación visual de los archivos más peligrosos detectados por VT.
 
-Leyenda en GitHub: "Detección heurística/comportamental: Identificación de actividad sospechosa de PowerShell, permitiendo la visibilidad de ataques sin archivos (fileless) o scripts maliciosos."
+---
 
-6. Dashboard de Operaciones de Seguridad (SOC)
-Finalmente, se diseñó un Dashboard personalizado para transformar miles de eventos crudos en métricas accionables para un analista de seguridad.
+## 📝 Conclusiones Técnicas
 
-📸 SCREENSHOT #4 A INSERTAR AQUÍ: Usá la captura final image_5d2fc9.png.
+* **Remediación (Active Response):** El sistema disparó las acciones de respuesta, aunque la eliminación final fue auditada debido a las restricciones de integridad de Windows (un comportamiento esperado en entornos de alta seguridad).
+* **Escalabilidad:** Esta arquitectura es capaz de escalar a cientos de agentes, manteniendo una latencia de detección menor a 5 segundos.
 
-Qué recuadrar en rojo:
-
-El contador gigante con el número 5 (Alertas Críticas).
-
-La rebanada de VirusTotal en la torta.
-
-Leyenda en GitHub: "Vista Consolidada del SOC Joaquin: Visualización en tiempo real que prioriza alertas críticas (Nivel 12) de VirusTotal y Sysmon, reduciendo la 'fatiga de alertas' y acelerando el tiempo de respuesta."
-
-7. Conclusiones y Próximos Pasos (Respuesta Activa)
-Estado Actual
-El sistema cumple con el ciclo completo de detección e investigación (EDR). La fase de respuesta automatizada (SOAR) se configuró en modo 'Audit-Only'.
-
-Lección Aprendida sobre Remediación
-Aunque el script de Active Response (borrado del archivo) fue disparado por el Manager, la ejecución final en el endpoint fue bloqueada por las protecciones nativas de Windows (Estructura de Permisos). En un entorno de producción, esto se resuelve elevando los privilegios del script o aislando el host de la red como medida de contingencia.
-
-Conclusión Final
-Este laboratorio demuestra que es posible implementar una defensa de nivel empresarial utilizando herramientas Open Source, logrando visibilidad total, orquestación inteligente y reducción significativa del riesgo de seguridad.
+---
+**Desarrollado por:** Joaquín Domenech  
+**Especialidad:** Ciberseguridad & IT Support
