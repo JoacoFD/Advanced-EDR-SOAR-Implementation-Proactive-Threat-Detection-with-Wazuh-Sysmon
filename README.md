@@ -15,6 +15,13 @@ El sistema se basa en tres pilares fundamentales:
 
 ---
 
+<img width="1210" height="1890" alt="mermaid-diagram (1)" src="https://github.com/user-attachments/assets/c9d29977-d6f8-468b-8fb6-1c7225188f08" />
+
+**Esta arquitectura representa un pipeline de detección proactiva de amenazas utilizando Sysmon para la recolección de telemetría a nivel endpoint y Wazuh como SIEM central.
+**Se implementan reglas personalizadas para identificar comportamientos maliciosos alineados con MITRE ATT&CK, mientras que una capa tipo SOAR permite la automatización de respuestas o su simulación según las restricciones del entorno.
+---
+
+
 ##  1. Telemetría de Kernel con Sysmon
 
 Para superar las limitaciones de los logs estándar de Windows, se implementó **Sysmon**. Esto permite rastrear la carga de drivers y la creación de procesos sospechosos en tiempo real.
