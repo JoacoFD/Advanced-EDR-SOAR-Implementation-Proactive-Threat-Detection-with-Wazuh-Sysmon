@@ -43,7 +43,7 @@ La orquestación se logró modificando el archivo de configuración del agente p
 Ante la creación de cualquier archivo nuevo en el escritorio, el sistema extrae el Hash y realiza una consulta automática a la API de VirusTotal sin intervención humana.
 
 ### Caso de Uso: Detección de Malware Real
-Se introdujo el artefacto `malware_final.exe` para testear el flujo de trabajo.
+Se introdujo el artefacto `test_malware.exe` para testear el flujo de trabajo.
 
 > **Resultado del Análisis:**
 
@@ -58,7 +58,9 @@ Se introdujo el artefacto `malware_final.exe` para testear el flujo de trabajo.
 No dependemos solo de firmas. Se crearon reglas para detectar técnicas de ataque comunes, como el uso de PowerShell para ejecutar binarios desde rutas no convencionales.
 
 > **Alerta de Comportamiento:**
-![Alerta PowerShell](./screenshots/powershell_alert.png)
+
+<img width="934" height="380" alt="image" src="https://github.com/user-attachments/assets/a63a9cca-aec8-4036-9a7a-433f8f3f7755" />
+ 
 *Identificación de procesos de PowerShell ejecutando comandos fuera del estándar, permitiendo detectar ataques 'fileless'.*
 
 ---
@@ -83,4 +85,3 @@ Se diseñó una interfaz personalizada para el analista, priorizando los eventos
 
 ---
 **Desarrollado por:** Joaquín Domenech  
-**Especialidad:** Ciberseguridad & IT Support
