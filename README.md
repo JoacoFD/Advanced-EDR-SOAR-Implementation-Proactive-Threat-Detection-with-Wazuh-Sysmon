@@ -46,7 +46,9 @@ Ante la creación de cualquier archivo nuevo en el escritorio, el sistema extrae
 Se introdujo el artefacto `malware_final.exe` para testear el flujo de trabajo.
 
 > **Resultado del Análisis:**
-![Detección VirusTotal](./screenshots/malware_vt.png)
+
+<img width="944" height="379" alt="image" src="https://github.com/user-attachments/assets/0af337b0-4523-4df1-ad53-cb21a705255a" />
+
 *El sistema reportó **67 detecciones positivas**, disparando una alerta de **Nivel 12** en el Manager de Wazuh de forma inmediata.*
 
 ---
