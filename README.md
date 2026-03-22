@@ -94,4 +94,29 @@ Se diseñó una interfaz personalizada para el analista, priorizando los eventos
 * **Escalabilidad:** Esta arquitectura es capaz de escalar a cientos de agentes, manteniendo una latencia de detección menor a 5 segundos.
 
 ---
+
+##  6. Respuesta Activa & Prevención de Intrusiones (IPS)
+
+El sistema no se limita a la observación; está configurado para actuar automáticamente ante amenazas confirmadas mediante el módulo de **Active Response**, transformando el EDR en un sistema de prevención (IPS).
+
+### Estrategias de Mitigación Automatizada:
+* **Bloqueo de Red (L3/L4):** Implementación de `firewall-drop` para banear IPs atacantes en tiempo real.
+* **Gestión de Fuerza Bruta:** Ante múltiples intentos fallidos de login (Regla 40111), el sistema aplica un baneo de **60 minutos** (3600s).
+* **Protección Web (XSS/SQLi):** Bloqueo automático de 30 minutos (1800s) ante patrones de inyección detectados en logs (Reglas 31103, 31106).
+* **Remediación de Malware:** Ejecución del comando `remove-threat.exe` inmediatamente después de que VirusTotal confirme un positivo de nivel 12 o superior (Regla 87105).
+
+> **Nota de Seguridad:** Estas reglas de baneo dinámico permiten reducir la superficie de ataque drásticamente sin intervención del analista, mitigando ataques de escaneo y fuerza bruta en segundos.
+
+---
+
+## ⚠️ 7. Limitaciones Técnicas y Observaciones de Seguridad
+
+Como en todo entorno de defensa real, existen restricciones operativas y de seguridad que fueron respetadas durante la implementación en este Home Lab:
+
+* **Restricciones de Integridad en Windows:** La respuesta de finalización de procesos (*Kill Response*) ante amenazas críticas fue auditada pero no ejecutada de forma intrusiva en ciertos procesos del sistema. Esto se debe a las protecciones de integridad nativas de Windows 11 que impiden la manipulación de procesos protegidos, incluso para agentes de seguridad.
+* **Seguridad del Entorno (Home Lab):** Por diseño, se limitaron ciertas acciones de remediación automática (como el borrado directo de archivos en directorios protegidos) para evitar la inestabilidad del sistema operativo anfitrión y garantizar la continuidad del laboratorio.
+* **Falsos Positivos Controlados:** Se optó por mantener una alta sensibilidad en las reglas heurísticas, priorizando la detección (aunque genere falsos positivos en actualizaciones de software como Microsoft Edge) para asegurar que ninguna técnica evasiva pase desapercibida.
+
+---
+
 **Desarrollado por:** Joaquín Domenech  
