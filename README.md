@@ -20,6 +20,7 @@ El sistema se basa en tres pilares fundamentales:
 *Esta arquitectura representa un pipeline de detección proactiva de amenazas utilizando Sysmon para la recolección de telemetría a nivel endpoint y Wazuh como SIEM central.
 
 *Se implementan reglas personalizadas para identificar comportamientos maliciosos alineados con MITRE ATT&CK, mientras que una capa tipo SOAR permite la automatización de respuestas o su simulación según las restricciones del entorno.
+
 ---
 
 
