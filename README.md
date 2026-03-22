@@ -1,4 +1,5 @@
-### Advanced-EDR-SOAR-Implementation-Proactive-Threat-Detection-with-Wazuh-Sysmon
+#  Advanced EDR & SOAR Implementation
+## Proactive Threat Detection with Wazuh, Sysmon & VirusTotal
 
 Este proyecto documenta la implementación de un sistema de **Detección y Respuesta de Endpoints (EDR)** y **Orquestación, Automatización y Respuesta de Seguridad (SOAR)** en un entorno controlado de Windows 11.
 
