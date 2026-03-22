@@ -26,7 +26,7 @@ Para superar las limitaciones de los logs estándar de Windows, se implementó *
 
 ---
 
-## ⚙️ 2. Configuración del EDR (`agent.conf`)
+##  2. Configuración del EDR (`agent.conf`)
 
 La orquestación se logró modificando el archivo de configuración del agente para centralizar la ingesta de datos y activar el monitoreo de integridad (FIM).
 
@@ -38,7 +38,7 @@ La orquestación se logró modificando el archivo de configuración del agente p
 
 ---
 
-## 🤖 3. Integración SOAR: Análisis con VirusTotal
+##  3. Integración SOAR: Análisis con VirusTotal
 
 Ante la creación de cualquier archivo nuevo en el escritorio, el sistema extrae el Hash y realiza una consulta automática a la API de VirusTotal sin intervención humana.
 
@@ -53,7 +53,7 @@ Se introdujo el artefacto `test_malware.exe` para testear el flujo de trabajo.
 
 ---
 
-## 🧠 4. Detección por Comportamiento (Heurística)
+##  4. Detección por Comportamiento 
 
 No dependemos solo de firmas. Se crearon reglas para detectar técnicas de ataque comunes, como el uso de PowerShell para ejecutar binarios desde rutas no convencionales.
 
@@ -65,11 +65,12 @@ No dependemos solo de firmas. Se crearon reglas para detectar técnicas de ataqu
 
 ---
 
-## 📊 5. Dashboard del SOC (Security Operations Center)
+## 5. Dashboard del SOC (Security Operations Center)
 
 Se diseñó una interfaz personalizada para el analista, priorizando los eventos críticos y reduciendo la "fatiga de alertas".
 
-![SOC Dashboard](./screenshots/dashboard_final.png)
+<img width="1912" height="779" alt="screen4" src="https://github.com/user-attachments/assets/cee6d341-47ba-4c45-adb8-0002eee6c5db" />
+
 
 **Métricas Clave:**
 1.  **Contador de Alertas Críticas:** Enfoque directo en incidentes nivel 12-14.
@@ -78,7 +79,7 @@ Se diseñó una interfaz personalizada para el analista, priorizando los eventos
 
 ---
 
-## 📝 Conclusiones Técnicas
+##  Conclusiones Técnicas
 
 * **Remediación (Active Response):** El sistema disparó las acciones de respuesta, aunque la eliminación final fue auditada debido a las restricciones de integridad de Windows (un comportamiento esperado en entornos de alta seguridad).
 * **Escalabilidad:** Esta arquitectura es capaz de escalar a cientos de agentes, manteniendo una latencia de detección menor a 5 segundos.
